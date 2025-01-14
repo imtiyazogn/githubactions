@@ -1,0 +1,35 @@
+name: using varaibles
+on:
+    push:
+    workflow_dispatch: 
+        inputs:
+            debug:
+                description: Enable Debug
+                type: boolean
+                default: false
+env:
+    WORKFLOW_VAR: "I am a workflow env var"
+    OVERWRITTEN: "I will be Overwritten "
+jobs:
+    echo:
+        runs-on: ${{vars.JOBS_RUNNER}}
+        env:
+            JOBS_VAR: "I Am a job env var"
+            OVERWRITTEN: "I have been overwritten at the job level"
+        steps:
+            - name: "Print ENV Variables" 
+              env:
+                STEP_VAR: "I am a step env var"
+                STEP_VAR2: "I am another step var"
+              run: |
+                  echo step env var : $STEP_VAR
+                  echo step env var 2: $STEP_VAR2
+                  echo job env var: $JOBS_VAR
+                  echo workflow env var: $WORKFLOW_VAR
+                  echo Overwritten: $OVERWRITTEN  
+                  echo JOB_RUNNER: ${{vars.JOBS_RUNNER}}
+            - name: "Over write Job variable" 
+              env:
+                OVERWRITTEN: "I have been Overwritten at Step level"          
+              run: |
+                echo Step env var: $OVERWRITTEN  
