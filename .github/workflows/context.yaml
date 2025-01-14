@@ -1,0 +1,30 @@
+name: environment and context
+on:  [push]
+env:
+    WF_LEVEL_ENV: Available for all the jobs    
+jobs:
+    env-context:
+        runs-on: ubuntu-latest
+    
+        if: github.ref == 'refs/heads/main'
+        env:
+            JOB_LEVEL_ENV: Available to all the steps in this Job env-context
+
+        steps:
+            - name: LOG ENV variable
+              run: echo $GITHUB_REF
+            - name: LOG Context
+              run: echo '${{github.ref}}'
+            - name: Set dynamic env
+              run: |
+                echo "NEW_ENV_VAR=$(date)" >> "$GITHUB_ENV" 
+                echo "JOB_LEVEL_ENV=$RANDOM" >> "$GITHUB_ENV"  
+            - name: LOG custom envt var
+              env:
+                STEP_LEVEL_ENV: Available only at the step level
+                WF_LEVEL_ENV: NEW WORKFLOW ENV VALUE AT STEP
+              run: |
+                echo ${{env.STEP_LEVEL_ENV}}
+                echo ${{env.WF_LEVEL_ENV}}
+                echo ${{env.JOB_LEVEL_ENV}}
+                echo $NEW_ENV_VAR
